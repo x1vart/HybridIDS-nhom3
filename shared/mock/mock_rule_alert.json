@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-04-07T21:00:02",
+  "alert": true,
+  "type": "Port Scan",
+  "src_ip": "192.168.1.10",
+  "dst_ip": "192.168.1.1",
+  "dst_port": 80,
+  "reason": "SYN scan phát hiện trên 20 port khác nhau trong vòng 1 giây"
+}

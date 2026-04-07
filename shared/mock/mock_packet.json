@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-04-07T21:00:00",
+  "src_ip": "192.168.1.10",
+  "dst_ip": "192.168.1.1",
+  "src_port": 54321,
+  "dst_port": 80,
+  "protocol": "TCP",
+  "packet_size": 512,
+  "flags": "SYN",
+  "duration": 0.002
+}

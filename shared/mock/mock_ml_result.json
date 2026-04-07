@@ -1,0 +1,6 @@
+{
+  "timestamp": "2026-04-07T21:00:02",
+  "prediction": "Port Scan",
+  "confidence": 0.91,
+  "src_ip": "192.168.1.10"
+}
