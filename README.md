@@ -39,16 +39,17 @@ Da bo sung `__init__.py` cho cac thu muc module:
 
 - `capture/`
 - `rule_engine/`
-- `ML/`
-- `UI/`
+- `ml/`
+- `ui/`
 - `shared/`
 
 Nhung import sau deu hop le:
 
 ```python
 from capture import capture_packet
-from rule_engine import detect_rule
-from ML import detect_ml
+from rule_engine import detect
+from ml import predict
+from ui import show
 ```
 
 ## 4. Chay nhanh pipeline
@@ -63,6 +64,7 @@ Ky vong output:
 capture module working
 rule engine working
 ml module working
+ui working
 Done
 ```
 
@@ -85,3 +87,4 @@ from shared.utils import load_json, save_json
 ## 6. Tai lieu lien quan
 
 - `contract.md`: Hop dong giao tiep giua cac module
+

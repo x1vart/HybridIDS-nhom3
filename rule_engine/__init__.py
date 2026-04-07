@@ -1,3 +1,3 @@
-from .rule_detector import detect_rule
+from .rule_detector import detect, detect_rule, run_rule
 
-__all__ = ["detect_rule"]
+__all__ = ["detect", "detect_rule", "run_rule"]

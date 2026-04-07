@@ -1,9 +1,16 @@
 from capture import capture_packet
-from rule_engine import detect_rule
-from ML import detect_ml
+from rule_engine import detect
+from ml import predict
+from ui import show
 
-packet = capture_packet()
-rule = detect_rule(packet)
-ml = detect_ml(packet)
 
-print("Done")
+def main():
+	packet = capture_packet()
+	rule = detect(packet)
+	ml = predict(packet)
+	show(rule, ml)
+	print("Done")
+
+
+if __name__ == "__main__":
+	main()
