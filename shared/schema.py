@@ -3,44 +3,24 @@
 Định nghĩa schema dữ liệu chung cho toàn bộ hệ thống IDS.
 Tất cả module PHẢI import từ file này — không tự định nghĩa lại.
 
-# Ví dụ người làm Rule-based
-from shared.schema import FeatureVector, RuleAlert, load_json
+# Ví dụ người làm Rule-based:
+from shared.schema import FeatureVector, RuleAlert
+from shared.utils import load_json
 
 data = load_json("shared/mock/mock_features.json")
 features = FeatureVector(**data)
+
 # ... logic của mình
+
 """
 
 from dataclasses import dataclass, field, asdict
-from typing import Optional
-from datetime import datetime
-import json
 
-
-# ──────────────────────────────────────────────
-# Helpers
-# ──────────────────────────────────────────────
-
-def now_iso() -> str:
-    """Trả về timestamp hiện tại theo chuẩn ISO 8601."""
-    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-
-def to_json(obj) -> str:
-    """Convert dataclass sang JSON string (dùng để ghi file)."""
-    return json.dumps(asdict(obj), ensure_ascii=False, indent=2)
-
-
-def load_json(path: str) -> dict:
-    """Đọc file JSON, trả về dict."""
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_json(data: dict, path: str) -> None:
-    """Ghi dict ra file JSON."""
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+try:
+    from .utils import now_iso, to_json
+except ImportError:
+    # Allow running "python shared/schema.py" directly.
+    from utils import now_iso, to_json
 
 
 # ──────────────────────────────────────────────

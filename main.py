@@ -1,6 +1,6 @@
-from capture.capture import capture_packet
-from rule_engine.rule_detector import detect_rule
-from ML.ml_detector import detect_ml
+from capture import capture_packet
+from rule_engine import detect_rule
+from ML import detect_ml
 
 packet = capture_packet()
 rule = detect_rule(packet)

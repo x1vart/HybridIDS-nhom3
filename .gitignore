@@ -3,3 +3,19 @@ __pycache__/
 *.pyc
 .env
 .vscode/
+
+# Python environments
+.venv/
+env/
+
+# Build and cache artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# IDS model/data artifacts
+*.pkl
+*.joblib
+shared/output/
