@@ -150,7 +150,7 @@
 ## 4. Thư mục dự án
 
 ```
-ids-project/
+HYBRIDIDS-NHOM3/
 ├── shared/
 │   ├── schema.py               # Dataclass định nghĩa tất cả schema
 │   ├── output/                 # Module ghi output thật vào đây
@@ -169,7 +169,7 @@ ids-project/
 │   ├── ml_detector.py
 │   ├── train.py
 │   ├── model/
-│   └── run_ml.py
+│   └── run_ml.pyS
 ├── ui/
 │   ├── dashboard.py
 │   └── run_ui.py
