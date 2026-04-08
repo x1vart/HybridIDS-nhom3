@@ -1,4 +1,4 @@
-# IDS Project — Intrusion Detection System
+# HybridIDS-nhom3 — Intrusion Detection System
 
 Hệ thống phát hiện xâm nhập mạng sử dụng Rule-based + Machine Learning.
 
@@ -15,8 +15,8 @@ Hệ thống phát hiện xâm nhập mạng sử dụng Rule-based + Machine Le
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/<your-org>/ids-project.git
-cd ids-project
+git clone https://github.com/kien055/HybridIDS-nhom3.git
+cd HybridIDS-nhom3
 
 # 2. Tạo môi trường ảo (khuyến nghị)
 python -m venv venv
@@ -59,7 +59,7 @@ python main.py
 ## Cấu trúc thư mục
 
 ```
-HYBRIDIDS-NHOM3/
+HybridIDS-nhom3/
 ├── shared/
 │   ├── schema.py          # Định nghĩa dataclass dùng chung
 │   ├── utils.py           # Hàm load/save JSON, đường dẫn
