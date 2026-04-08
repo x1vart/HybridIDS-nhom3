@@ -1,90 +1,94 @@
-# HybridIDS-nhom3
+# IDS Project — Intrusion Detection System
 
-Pipeline IDS lai (Rule-based + ML) cho môn Project II.
+Hệ thống phát hiện xâm nhập mạng sử dụng Rule-based + Machine Learning.
 
-## 1. Yeu cau
+---
+
+## Yêu cầu
 
 - Python 3.10+
-- Windows/Linux/macOS
+- (Khuyến nghị) Linux hoặc WSL để capture packet thật
 
-## 2. Cai dat
+---
 
-```bash
-python -m venv .venv
-```
-
-Kich hoat moi truong ao:
-
-- Windows (PowerShell):
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-- Linux/macOS:
+## Cài đặt
 
 ```bash
-source .venv/bin/activate
-```
+# 1. Clone repo
+git clone https://github.com/<your-org>/ids-project.git
+cd ids-project
 
-Sau do cai thu vien:
+# 2. Tạo môi trường ảo (khuyến nghị)
+python -m venv venv
+source venv/bin/activate        # Linux/Mac
+venv\Scripts\activate           # Windows
 
-```bash
+# 3. Cài thư viện
 pip install -r requirements.txt
 ```
 
-## 3. Cau truc package
+---
 
-Da bo sung `__init__.py` cho cac thu muc module:
+## Chạy từng module độc lập (để test)
 
-- `capture/`
-- `rule_engine/`
-- `ml/`
-- `ui/`
-- `shared/`
+```bash
+# TV1 — Data Capture
+python capture/run_capture.py
 
-Nhung import sau deu hop le:
+# TV2 — Rule-based Detection
+python rule_engine/run_rule.py
 
-```python
-from capture import capture_packet
-from rule_engine import detect
-from ml import predict
-from ui import show
+# TV3 — Machine Learning (train model trước)
+python ml/train.py
+python ml/run_ml.py
+
+# TV4 — UI Dashboard
+streamlit run ui/run_ui.py
 ```
 
-## 4. Chay nhanh pipeline
+---
+
+## Chạy toàn bộ pipeline
 
 ```bash
 python main.py
 ```
 
-Ky vong output:
+---
 
-```text
-capture module working
-rule engine working
-ml module working
-ui working
-Done
+## Cấu trúc thư mục
+
+```
+HYBRIDIDS-NHOM3/
+├── shared/
+│   ├── schema.py          # Định nghĩa dataclass dùng chung
+│   ├── utils.py           # Hàm load/save JSON, đường dẫn
+│   ├── output/            # Kết quả thật (không commit lên Git)
+│   └── mock/              # Dữ liệu giả để test từng module
+├── capture/               # Module bắt packet (TV1)
+├── rule_engine/           # Module rule-based detection (TV2)
+├── ml/                    # Module machine learning (TV3)
+├── ui/                    # Dashboard + tích hợp (TV4)
+├── main.py                # Pipeline tích hợp toàn bộ
+├── contract.md            # Chuẩn giao tiếp giữa các module
+└── requirements.txt
 ```
 
-## 5. Quy uoc shared
+---
 
-- Dataclass schema nam trong `shared/schema.py`
-- Helper dung chung nam trong `shared/utils.py`:
-	- `now_iso`
-	- `load_json`
-	- `save_json`
-	- `to_json`
+## Phân công
 
-Vi du su dung:
+| Module | Thành viên | Branch |
+|---|---|---|
+| Data Capture | TV1 | `feature/capture` |
+| Rule-based Detection | TV2 | `feature/rule` |
+| Machine Learning | TV3 | `feature/ml` |
+| UI + Integration | TV4 | `feature/ui` |
 
-```python
-from shared.schema import FeatureVector
-from shared.utils import load_json, save_json
-```
+---
 
-## 6. Tai lieu lien quan
+## Quy ước
 
-- `contract.md`: Hop dong giao tiep giua cac module
-
+- Tất cả module giao tiếp qua JSON (xem `contract.md`)
+- Không tự sửa `shared/schema.py` — báo nhóm trưởng trước
+- Mỗi module phải chạy được độc lập với mock data trước khi merge
