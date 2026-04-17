@@ -34,7 +34,7 @@ def _build_packet_event(data: dict) -> PacketEvent:
     return event
 
 
-def _packet_to_event(pkt: Any, base_time: float) -> dict:
+def _packet_to_event(pkt: Any, duration: float) -> dict:
     """Chuyển 1 scapy packet thành PacketEvent dict hợp lệ."""
     from scapy.all import ICMP, IP, IPv6, TCP, UDP
 
@@ -47,12 +47,12 @@ def _packet_to_event(pkt: Any, base_time: float) -> dict:
         src_ip = str(ip_layer.src)
         dst_ip = str(ip_layer.dst)
     else:
-        src_ip = None
-        dst_ip = None
+        src_ip = "0.0.0.0"
+        dst_ip = "0.0.0.0"
 
     src_port = 0
     dst_port = 0
-    flags = ""
+    flags = "NONE"
     protocol = "TCP"
 
     if TCP in pkt:
@@ -77,7 +77,7 @@ def _packet_to_event(pkt: Any, base_time: float) -> dict:
         "protocol": _normalize_protocol(protocol),
         "packet_size": int(len(pkt)),
         "flags": flags,
-        "duration": max(0.0, float(pkt.time) - base_time),
+        "duration": max(0.0, float(duration)),
         "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     }
 
@@ -154,8 +154,16 @@ def capture_packet_live(
         packet_filter=packet_filter,
         count=count,
     )
-    base_time = float(packets[0].time)
-    events = [_packet_to_event(pkt, base_time) for pkt in packets]
+    events: list[dict] = []
+    previous_time: Optional[float] = None
+    for pkt in packets:
+        current_time = float(pkt.time)
+        if previous_time is None:
+            delta = 0.0
+        else:
+            delta = current_time - previous_time
+        events.append(_packet_to_event(pkt, delta))
+        previous_time = current_time
 
     last_event = events[-1]
 
