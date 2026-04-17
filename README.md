@@ -101,6 +101,43 @@ python main.py
 
 ---
 
+## Chạy riêng Data Capture
+
+### 1) Chạy mock (an toàn, không cần quyền Admin)
+
+```bash
+python capture/run_capture.py --mode mock
+```
+
+Kết quả sẽ được ghi tại `shared/output/packet_event.json`.
+
+### 2) Xem danh sách interface để capture thật
+
+```bash
+python capture/run_capture.py --list-ifaces
+```
+
+### 3) Capture packet thật (live mode)
+
+```bash
+python capture/run_capture.py --mode live --iface "Wi-Fi" --timeout 15 --filter tcp --count 5
+```
+
+Ý nghĩa tham số:
+
+- `--iface`: tên card mạng, lấy từ `--list-ifaces`
+- `--timeout`: thời gian chờ tối đa (giây)
+- `--filter`: bộ lọc BPF (vd: `tcp`, `udp`, `host 8.8.8.8`)
+- `--count`: số packet muốn bắt trong 1 phiên
+
+Lưu ý Windows:
+
+- Nên mở terminal bằng quyền Administrator.
+- Nên cài Npcap để sniff ổn định với Scapy.
+- Nếu timeout mà không có traffic, hãy mở web/ping để tạo lưu lượng trước khi chạy capture.
+
+---
+
 ## Cấu trúc thư mục
 
 ```
