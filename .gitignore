@@ -19,3 +19,8 @@ build/
 *.pkl
 *.joblib
 shared/output/
+
+reports/
+rules.txt
+tasks.txt
+details.txt
