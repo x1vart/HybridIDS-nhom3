@@ -16,6 +16,7 @@ dist/
 build/
 
 # IDS model/data artifacts
+*.csv
 *.pkl
 *.joblib
 shared/output/

@@ -5,7 +5,7 @@ Các hàm tiện ích dùng chung cho toàn bộ hệ thống IDS.
 Import từ đây thay vì tự viết lại trong từng module.
 
 Cách dùng:
-    from shared.utils import load_json, save_json, now_iso, get_output_path
+    from shared.utils import load_json, save_json, now_iso, get_output_path, to_json
 """
 
 import json
@@ -70,6 +70,14 @@ def append_json_log(data: dict, path: str) -> None:
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
 
+def to_json(data: any) -> str:
+    """
+    Chuyển đổi object/dict thành chuỗi JSON.
+    (Hàm này được thêm vào để vá lỗi cho class MLResult)
+    """
+    return json.dumps(data, ensure_ascii=False, indent=2)
+
+
 # ──────────────────────────────────────────────
 # Đường dẫn
 # ──────────────────────────────────────────────
@@ -81,10 +89,6 @@ def get_output_path(filename: str) -> str:
     """
     Trả về đường dẫn đầy đủ tới shared/output/<filename>.
     Dùng khi muốn ghi output mà không cần nhớ đường dẫn tuyệt đối.
-
-    Ví dụ:
-        save_json(data, get_output_path("packet_event.json"))
-        # → ids-project/shared/output/packet_event.json
     """
     return os.path.join(BASE_DIR, "shared", "output", filename)
 
@@ -93,9 +97,6 @@ def get_mock_path(filename: str) -> str:
     """
     Trả về đường dẫn đầy đủ tới shared/mock/<filename>.
     Dùng trong các file run_xxx.py để load mock data.
-
-    Ví dụ:
-        data = load_json(get_mock_path("mock_features.json"))
     """
     return os.path.join(BASE_DIR, "shared", "mock", filename)
 
