@@ -34,69 +34,21 @@ def _build_packet_event(data: dict) -> PacketEvent:
     return event
 
 
-def capture_packet_mock() -> dict:
-    """Capture packet từ mock JSON."""
-    data = load_json(get_mock_path("mock_packet.json"))
-    event = _build_packet_event(data)
-
-    out_path = get_output_path("packet_event.json")
-    save_json(event.to_dict(), out_path)
-    return event.to_dict()
-
-
-def capture_packet_live(
-    iface: Optional[str] = None,
-    timeout: int = 10,
-    packet_filter: Optional[str] = None,
-    count: int = 1,
-) -> dict:
-    """
-    Sniff packet thật và trả về packet đầu tiên (chuẩn PacketEvent).
-
-    Args:
-        iface: tên card mạng (None = default interface)
-        timeout: số giây chờ packet
-        packet_filter: BPF filter, ví dụ "tcp", "udp", "host 8.8.8.8"
-        count: số packet tối đa cần bắt trong một phiên sniff
-    """
-    try:
-        from scapy.all import ICMP, IP, TCP, UDP, sniff
-    except Exception as exc:
-        raise RuntimeError(
-            "Không import được scapy. Hãy cài dependencies: pip install -r requirements.txt"
-        ) from exc
-
-    sniff_count = max(1, int(count))
-    try:
-        packets = sniff(
-            iface=iface,
-            count=sniff_count,
-            timeout=timeout,
-            filter=packet_filter,
-        )
-    except Exception as exc:
-        raise RuntimeError(
-            "Sniff thất bại. Hãy chạy terminal bằng quyền Admin và cài Npcap trên Windows."
-        ) from exc
-
-    if not packets:
-        raise TimeoutError(
-            "Không bắt được packet nào trong thời gian chờ. "
-            "Thử tăng timeout hoặc đổi interface/filter."
-        )
-
-    pkt = packets[-1]
-    capture_duration = 0.0
-    if len(packets) >= 2:
-        capture_duration = max(0.0, float(packets[-1].time) - float(packets[0].time))
+def _packet_to_event(pkt: Any, base_time: float) -> dict:
+    """Chuyển 1 scapy packet thành PacketEvent dict hợp lệ."""
+    from scapy.all import ICMP, IP, IPv6, TCP, UDP
 
     if IP in pkt:
         ip_layer = pkt[IP]
         src_ip = str(ip_layer.src)
         dst_ip = str(ip_layer.dst)
+    elif IPv6 in pkt:
+        ip_layer = pkt[IPv6]
+        src_ip = str(ip_layer.src)
+        dst_ip = str(ip_layer.dst)
     else:
-        src_ip = "0.0.0.0"
-        dst_ip = "0.0.0.0"
+        src_ip = None
+        dst_ip = None
 
     src_port = 0
     dst_port = 0
@@ -125,15 +77,113 @@ def capture_packet_live(
         "protocol": _normalize_protocol(protocol),
         "packet_size": int(len(pkt)),
         "flags": flags,
-        "duration": capture_duration,
+        "duration": max(0.0, float(pkt.time) - base_time),
         "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     }
 
+    return _build_packet_event(data).to_dict()
+
+
+def _sniff_packets(
+    iface: Optional[str],
+    timeout: int,
+    packet_filter: Optional[str],
+    count: int,
+) -> list[Any]:
+    """Thực hiện sniff và trả về danh sách packet thô từ Scapy."""
+    try:
+        from scapy.all import sniff
+    except Exception as exc:
+        raise RuntimeError(
+            "Không import được scapy. Hãy cài dependencies: pip install -r requirements.txt"
+        ) from exc
+
+    sniff_count = max(1, int(count))
+    try:
+        packets = sniff(
+            iface=iface,
+            count=sniff_count,
+            timeout=timeout,
+            filter=packet_filter,
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            "Sniff thất bại. Hãy chạy terminal bằng quyền Admin và cài Npcap trên Windows."
+        ) from exc
+
+    if not packets:
+        raise TimeoutError(
+            "Không bắt được packet nào trong thời gian chờ. "
+            "Thử tăng timeout hoặc đổi interface/filter."
+        )
+    return list(packets)
+
+
+def capture_packet_mock() -> dict:
+    """Capture packet từ mock JSON."""
+    data = load_json(get_mock_path("mock_packet.json"))
     event = _build_packet_event(data)
 
     out_path = get_output_path("packet_event.json")
     save_json(event.to_dict(), out_path)
     return event.to_dict()
+
+
+def capture_packet_live(
+    iface: Optional[str] = None,
+    timeout: int = 10,
+    packet_filter: Optional[str] = None,
+    count: int = 1,
+    return_batch: bool = False,
+) -> dict | list[dict]:
+    """
+    Sniff packet thật.
+
+    Mặc định trả về 1 PacketEvent (packet cuối) để tương thích pipeline cũ.
+    Nếu return_batch=True thì trả về list PacketEvent và ghi thêm packet_events.json.
+
+    Args:
+        iface: tên card mạng (None = default interface)
+        timeout: số giây chờ packet
+        packet_filter: BPF filter, ví dụ "tcp", "udp", "host 8.8.8.8"
+        count: số packet tối đa cần bắt trong một phiên sniff
+    """
+    packets = _sniff_packets(
+        iface=iface,
+        timeout=timeout,
+        packet_filter=packet_filter,
+        count=count,
+    )
+    base_time = float(packets[0].time)
+    events = [_packet_to_event(pkt, base_time) for pkt in packets]
+
+    last_event = events[-1]
+
+    out_path = get_output_path("packet_event.json")
+    save_json(last_event, out_path)
+
+    if return_batch:
+        batch_out_path = get_output_path("packet_events.json")
+        save_json(events, batch_out_path)
+        return events
+
+    return last_event
+
+
+def capture_packets_live(
+    iface: Optional[str] = None,
+    timeout: int = 10,
+    packet_filter: Optional[str] = None,
+    count: int = 10,
+) -> list[dict]:
+    """Sniff và trả về danh sách PacketEvent (batch mode)."""
+    return capture_packet_live(
+        iface=iface,
+        timeout=timeout,
+        packet_filter=packet_filter,
+        count=count,
+        return_batch=True,
+    )
 
 
 def list_capture_interfaces() -> list[str]:
@@ -147,12 +197,12 @@ def list_capture_interfaces() -> list[str]:
     return sorted(get_if_list())
 
 
-def capture_packet(mode: str = "mock", **kwargs) -> dict:
+def capture_packet(mode: str = "mock", **kwargs) -> dict | list[dict]:
     """
     Entry point của module Data Capture.
 
     Returns:
-        dict: PacketEvent dạng dict (đúng schema trong contract.md)
+        dict | list[dict]: PacketEvent đơn hoặc danh sách PacketEvent (khi return_batch=True)
     """
     selected_mode = mode.strip().lower()
     if selected_mode == "mock":
@@ -163,5 +213,6 @@ def capture_packet(mode: str = "mock", **kwargs) -> dict:
             timeout=int(kwargs.get("timeout", 10)),
             packet_filter=kwargs.get("packet_filter"),
             count=int(kwargs.get("count", 1)),
+            return_batch=bool(kwargs.get("return_batch", False)),
         )
     raise ValueError(f"Mode không hợp lệ: {mode}. Dùng 'mock' hoặc 'live'.")

@@ -41,6 +41,11 @@ if __name__ == "__main__":
         help="How many packets to sniff in live mode (default: 1)",
     )
     parser.add_argument(
+        "--batch",
+        action="store_true",
+        help="Return/save all captured packets as a list (shared/output/packet_events.json)",
+    )
+    parser.add_argument(
         "--list-ifaces",
         action="store_true",
         help="List available capture interfaces then exit",
@@ -59,6 +64,7 @@ if __name__ == "__main__":
             timeout=args.timeout,
             packet_filter=args.packet_filter,
             count=args.count,
+            return_batch=args.batch,
         )
     except Exception as exc:
         print(f"[capture] ERROR: {exc}")
