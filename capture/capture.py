@@ -122,6 +122,8 @@ def _sniff_packets(
 def capture_packet_mock() -> dict:
     """Capture packet từ mock JSON."""
     data = load_json(get_mock_path("mock_packet.json"))
+    if isinstance(data, dict) and "__cases__" in data:
+        data = {key: value for key, value in data.items() if key != "__cases__"}
     event = _build_packet_event(data)
 
     out_path = get_output_path("packet_event.json")

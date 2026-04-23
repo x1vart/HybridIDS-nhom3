@@ -5,5 +5,61 @@
   "src_ip": "192.168.1.10",
   "dst_ip": "192.168.1.1",
   "dst_port": 80,
-  "reason": "SYN scan phát hiện trên 20 port khác nhau trong vòng 1 giây"
+  "reason": "SYN scan phát hiện trên 20 port khác nhau trong vòng 1 giây",
+  "__cases__": {
+    "port_scan": {
+      "timestamp": "2026-04-07T21:00:02",
+      "alert": true,
+      "type": "Port Scan",
+      "src_ip": "192.168.1.10",
+      "dst_ip": "192.168.1.1",
+      "dst_port": 80,
+      "reason": "SYN scan phát hiện trên 20 port khác nhau trong vòng 1 giây"
+    },
+    "dos": {
+      "timestamp": "2026-04-07T21:05:18",
+      "alert": true,
+      "type": "DoS",
+      "src_ip": "10.0.0.45",
+      "dst_ip": "192.168.1.20",
+      "dst_port": 443,
+      "reason": "Lưu lượng tăng đột biến từ một nguồn, nghi ngờ DoS"
+    },
+    "brute_force": {
+      "timestamp": "2026-04-07T21:09:44",
+      "alert": true,
+      "type": "Brute Force",
+      "src_ip": "172.16.10.8",
+      "dst_ip": "192.168.1.25",
+      "dst_port": 22,
+      "reason": "Nhiều lần đăng nhập thất bại liên tiếp vào SSH"
+    },
+    "normal": {
+      "timestamp": "2026-04-07T21:12:10",
+      "alert": false,
+      "type": "None",
+      "src_ip": "192.168.1.55",
+      "dst_ip": "192.168.1.1",
+      "dst_port": 53,
+      "reason": "Traffic bình thường, không thấy dấu hiệu bất thường"
+    },
+    "medium_rule_alert": {
+      "timestamp": "2026-04-07T21:15:20",
+      "alert": true,
+      "type": "Port Scan",
+      "src_ip": "192.168.10.11",
+      "dst_ip": "192.168.1.100",
+      "dst_port": 8080,
+      "reason": "Nghi ngờ quét cổng mức nhẹ trong 10 giây"
+    },
+    "ml_only_anomaly": {
+      "timestamp": "2026-04-07T21:18:50",
+      "alert": false,
+      "type": "None",
+      "src_ip": "172.20.0.9",
+      "dst_ip": "192.168.1.77",
+      "dst_port": 445,
+      "reason": "Rule chưa đủ điều kiện kích hoạt"
+    }
+  }
 }
