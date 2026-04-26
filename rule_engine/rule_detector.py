@@ -1,13 +1,14 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
-from config import CONFIG
+
+from .config import CONFIG
 
 
 class RuleEngine:
     def __init__(self):
-        self.syn_tracker     = defaultdict(list)
+        self.syn_tracker = defaultdict(list)
         self.traffic_tracker = defaultdict(list)
-        self.login_tracker   = defaultdict(list)
+        self.login_tracker = defaultdict(list)
 
     # Entry point chính — gọi hàm này cho mỗi packet
     def analyze(self, packet: dict) -> dict:
@@ -17,9 +18,9 @@ class RuleEngine:
         alerts += self._detect_brute_force(packet)
 
         return {
-            "alert":  len(alerts) > 0,
+            "alert": len(alerts) > 0,
             "alerts": alerts,
-            "src_ip": packet.get("src_ip")
+            "src_ip": packet.get("src_ip"),
         }
 
     # Rule 1: Port Scan
@@ -36,18 +37,17 @@ class RuleEngine:
         self.syn_tracker[src].append((now, dst_port))
 
         window = timedelta(seconds=cfg["window_sec"])
-        self.syn_tracker[src] = [
-            (t, p) for t, p in self.syn_tracker[src]
-            if now - t <= window
-        ]
+        self.syn_tracker[src] = [(t, p) for t, p in self.syn_tracker[src] if now - t <= window]
 
         ports = set(p for _, p in self.syn_tracker[src])
         if len(ports) >= cfg["threshold"]:
-            return [{
-                "type":   "Port Scan",
-                "src_ip": src,
-                "detail": f"{len(ports)} ports scanned in {cfg['window_sec']}s"
-            }]
+            return [
+                {
+                    "type": "Port Scan",
+                    "src_ip": src,
+                    "detail": f"{len(ports)} ports scanned in {cfg['window_sec']}s",
+                }
+            ]
         return []
 
     # Rule 2: DoS
@@ -60,18 +60,17 @@ class RuleEngine:
         self.traffic_tracker[src].append(now)
 
         window = timedelta(seconds=cfg["window_sec"])
-        self.traffic_tracker[src] = [
-            t for t in self.traffic_tracker[src]
-            if now - t <= window
-        ]
+        self.traffic_tracker[src] = [t for t in self.traffic_tracker[src] if now - t <= window]
 
         count = len(self.traffic_tracker[src])
         if count >= cfg["threshold"]:
-            return [{
-                "type":   "DoS",
-                "src_ip": src,
-                "detail": f"{count} packets in {cfg['window_sec']}s"
-            }]
+            return [
+                {
+                    "type": "DoS",
+                    "src_ip": src,
+                    "detail": f"{count} packets in {cfg['window_sec']}s",
+                }
+            ]
         return []
 
     # Rule 3: Brute Force
@@ -87,16 +86,15 @@ class RuleEngine:
         self.login_tracker[src].append(now)
 
         window = timedelta(seconds=cfg["window_sec"])
-        self.login_tracker[src] = [
-            t for t in self.login_tracker[src]
-            if now - t <= window
-        ]
+        self.login_tracker[src] = [t for t in self.login_tracker[src] if now - t <= window]
 
         count = len(self.login_tracker[src])
         if count >= cfg["threshold"]:
-            return [{
-                "type":   "Brute Force",
-                "src_ip": src,
-                "detail": f"{count} attempts to port {packet['dst_port']} in {cfg['window_sec']}s"
-            }]
+            return [
+                {
+                    "type": "Brute Force",
+                    "src_ip": src,
+                    "detail": f"{count} attempts to port {packet['dst_port']} in {cfg['window_sec']}s",
+                }
+            ]
         return []
