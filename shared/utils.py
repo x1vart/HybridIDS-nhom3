@@ -22,6 +22,17 @@ def now_iso() -> str:
     return datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
 
+def to_json(obj) -> str:
+    """Serialize object (ưu tiên dataclass) sang JSON string."""
+    if hasattr(obj, "to_dict"):
+        payload = obj.to_dict()
+    elif hasattr(obj, "__dict__"):
+        payload = obj.__dict__
+    else:
+        payload = obj
+    return json.dumps(payload, ensure_ascii=False, indent=2)
+
+
 # ──────────────────────────────────────────────
 # Đọc / Ghi JSON
 # ──────────────────────────────────────────────

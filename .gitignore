@@ -6,6 +6,7 @@ __pycache__/
 
 # Python environments
 .venv/
+.venv311/
 env/
 
 # Build and cache artifacts
@@ -20,3 +21,8 @@ build/
 *.pkl
 *.joblib
 shared/output/
+
+reports/
+rules.txt
+tasks.txt
+details.txt

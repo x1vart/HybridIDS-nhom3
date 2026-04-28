@@ -7,5 +7,62 @@
   "protocol": "TCP",
   "packet_size": 512,
   "flags": "SYN",
-  "duration": 0.002
+  "duration": 0.002,
+  "__cases__": {
+    "port_scan": {
+      "timestamp": "2026-04-07T21:00:00",
+      "src_ip": "192.168.1.10",
+      "dst_ip": "192.168.1.1",
+      "src_port": 54321,
+      "dst_port": 80,
+      "protocol": "TCP",
+      "packet_size": 512,
+      "flags": "SYN",
+      "duration": 0.002
+    },
+    "dos_like": {
+      "timestamp": "2026-04-07T21:03:10",
+      "src_ip": "10.0.0.45",
+      "dst_ip": "192.168.1.20",
+      "src_port": 40000,
+      "dst_port": 443,
+      "protocol": "TCP",
+      "packet_size": 1400,
+      "flags": "SYN",
+      "duration": 0.0005
+    },
+    "ssh_bruteforce_like": {
+      "timestamp": "2026-04-07T21:06:34",
+      "src_ip": "172.16.10.8",
+      "dst_ip": "192.168.1.25",
+      "src_port": 50234,
+      "dst_port": 22,
+      "protocol": "TCP",
+      "packet_size": 300,
+      "flags": "ACK",
+      "duration": 0.05
+    },
+    "benign_dns": {
+      "timestamp": "2026-04-07T21:09:44",
+      "src_ip": "192.168.1.55",
+      "dst_ip": "192.168.1.1",
+      "src_port": 5353,
+      "dst_port": 53,
+      "protocol": "UDP",
+      "packet_size": 90,
+      "flags": "",
+      "duration": 0.2
+    },
+    "rst_probe": {
+      "timestamp": "2026-04-07T21:11:00",
+      "src_ip": "203.0.113.6",
+      "dst_ip": "192.168.1.88",
+      "src_port": 61000,
+      "dst_port": 3389,
+      "protocol": "TCP",
+      "packet_size": 700,
+      "flags": "RST",
+      "duration": 0.01
+    }
+  }
 }

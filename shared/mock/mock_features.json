@@ -7,5 +7,62 @@
   "packet_count": 15,
   "connection_duration": 2.5,
   "avg_packet_size": 480.0,
-  "flags": "SYN"
+  "flags": "SYN",
+  "__cases__": {
+    "port_scan": {
+      "timestamp": "2026-04-07T21:00:01",
+      "src_ip": "192.168.1.10",
+      "dst_ip": "192.168.1.1",
+      "dst_port": 80,
+      "protocol": "TCP",
+      "packet_count": 15,
+      "connection_duration": 2.5,
+      "avg_packet_size": 480.0,
+      "flags": "SYN"
+    },
+    "dos": {
+      "timestamp": "2026-04-07T21:05:18",
+      "src_ip": "10.0.0.45",
+      "dst_ip": "192.168.1.20",
+      "dst_port": 443,
+      "protocol": "TCP",
+      "packet_count": 120,
+      "connection_duration": 0.9,
+      "avg_packet_size": 1300.0,
+      "flags": "SYN"
+    },
+    "brute_force": {
+      "timestamp": "2026-04-07T21:09:44",
+      "src_ip": "172.16.10.8",
+      "dst_ip": "192.168.1.25",
+      "dst_port": 22,
+      "protocol": "TCP",
+      "packet_count": 85,
+      "connection_duration": 6.2,
+      "avg_packet_size": 260.0,
+      "flags": "ACK"
+    },
+    "normal": {
+      "timestamp": "2026-04-07T21:12:10",
+      "src_ip": "192.168.1.55",
+      "dst_ip": "192.168.1.1",
+      "dst_port": 53,
+      "protocol": "UDP",
+      "packet_count": 8,
+      "connection_duration": 4.0,
+      "avg_packet_size": 120.0,
+      "flags": ""
+    },
+    "ml_only_anomaly": {
+      "timestamp": "2026-04-07T21:16:40",
+      "src_ip": "172.20.0.9",
+      "dst_ip": "192.168.1.77",
+      "dst_port": 445,
+      "protocol": "TCP",
+      "packet_count": 55,
+      "connection_duration": 1.8,
+      "avg_packet_size": 750.0,
+      "flags": "PSH"
+    }
+  }
 }

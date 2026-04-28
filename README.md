@@ -28,22 +28,67 @@ pip install -r requirements.txt
 ```
 
 ---
+## Dùng CICIDS2017 cho ML
 
-## Chạy từng module độc lập (để test)
+ML của project không đọc raw CSV CICIDS2017 trực tiếp. Dữ liệu phải được convert sang đúng format `FeatureVector` trong `contract.md` và `shared/schema.py` trước khi chạy `ml/run_ml.py`.
+
+### Luồng chạy
 
 ```bash
-# TV1 — Data Capture
-python capture/run_capture.py
+# 1. Convert CSV CICIDS2017 sang JSON feature
+python ml/prepare_cicids.py --csv "path/to/your_cicids.csv" --max-rows 500
 
-# TV2 — Rule-based Detection
-python rule_engine/run_rule.py
+# 2. Chạy ML với file đã convert
+python ml/run_ml.py --input shared/mock/cicids_features.json --index 0
+```
 
-# TV3 — Machine Learning (train model trước)
-python ml/train.py
+### Nếu muốn thay mock test hiện tại
+
+```bash
+python ml/prepare_cicids.py --csv "path/to/your_cicids.csv" --replace-mock
 python ml/run_ml.py
+```
 
-# TV4 — UI Dashboard
-streamlit run ui/run_ui.py
+Lưu ý: `--replace-mock` sẽ ghi đè `shared/mock/mock_features.json`, nên có thể ảnh hưởng phần test của Rule-based nếu team đang dùng chung file này.
+
+### Mapping CICIDS2017 -> FeatureVector
+
+Script `ml/prepare_cicids.py` đang map các cột phổ biến như sau:
+
+| CICIDS2017 | FeatureVector |
+|---|---|
+| `Source IP` / `Src IP` | `src_ip` |
+| `Destination IP` / `Dst IP` | `dst_ip` |
+| `Destination Port` / `Dst Port` | `dst_port` |
+| `Protocol` | `protocol` |
+| `Total Fwd Packets` + `Total Backward Packets` | `packet_count` |
+| `Flow Duration` / `Duration` | `connection_duration` |
+| `Average Packet Size` / `Packet Length Mean` / `Avg Packet Size` | `avg_packet_size` |
+| `SYN Flag Count` / `ACK Flag Count` / `FIN Flag Count` / `RST Flag Count` / `PSH Flag Count` / `URG Flag Count` | `flags` |
+| `Timestamp` / `timestamp` | `timestamp` |
+
+### Ghi chú
+
+- Nếu CSV có nhiều dòng, `ml/prepare_cicids.py` sẽ xuất ra một file JSON list.
+- Dùng `--index` để chọn 1 dòng cụ thể khi test.
+- Đây là lớp chuyển đổi để test theo schema của project, không phải giữ nguyên raw format CICIDS.
+
+```bash
+# Convert toi da 500 dong tu CICIDS2017 CSV
+python ml/prepare_cicids.py --csv "path/to/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv" --max-rows 500
+
+# Neu muon thay hẳn shared/mock/mock_features.json bang dong dau tien
+python ml/prepare_cicids.py --csv "path/to/file.csv" --replace-mock
+```
+
+Sau khi convert, chay ML voi file moi:
+
+```bash
+# Chay voi dong dau tien trong danh sach converted
+python ml/run_ml.py --input shared/mock/cicids_features.json --index 0
+
+# Hoac chay theo mock cu (neu da --replace-mock)
+python ml/run_ml.py
 ```
 
 ---
@@ -53,6 +98,43 @@ streamlit run ui/run_ui.py
 ```bash
 python main.py
 ```
+
+---
+
+## Chạy riêng Data Capture
+
+### 1) Chạy mock (an toàn, không cần quyền Admin)
+
+```bash
+python capture/run_capture.py --mode mock
+```
+
+Kết quả sẽ được ghi tại `shared/output/packet_event.json`.
+
+### 2) Xem danh sách interface để capture thật
+
+```bash
+python capture/run_capture.py --list-ifaces
+```
+
+### 3) Capture packet thật (live mode)
+
+```bash
+python capture/run_capture.py --mode live --iface "Wi-Fi" --timeout 15 --filter tcp --count 5
+```
+
+Ý nghĩa tham số:
+
+- `--iface`: tên card mạng, lấy từ `--list-ifaces`
+- `--timeout`: thời gian chờ tối đa (giây)
+- `--filter`: bộ lọc BPF (vd: `tcp`, `udp`, `host 8.8.8.8`)
+- `--count`: số packet muốn bắt trong 1 phiên
+
+Lưu ý Windows:
+
+- Nên mở terminal bằng quyền Administrator.
+- Nên cài Npcap để sniff ổn định với Scapy.
+- Nếu timeout mà không có traffic, hãy mở web/ping để tạo lưu lượng trước khi chạy capture.
 
 ---
 
@@ -80,10 +162,10 @@ HybridIDS-nhom3/
 
 | Module | Thành viên | Branch |
 |---|---|---|
-| Data Capture | TV1 | `feature/capture` |
-| Rule-based Detection | TV2 | `feature/rule` |
-| Machine Learning | TV3 | `feature/ml` |
-| UI + Integration | TV4 | `feature/ui` |
+| Data Capture | Kien | `feature/capture` |
+| Rule-based Detection | Tung | `feature/rule` |
+| Machine Learning | Viet | `feature/ml` |
+| UI + Integration | Thuan | `feature/ui` |
 
 ---
 

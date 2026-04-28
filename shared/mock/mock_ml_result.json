@@ -2,5 +2,43 @@
   "timestamp": "2026-04-07T21:00:02",
   "prediction": "Port Scan",
   "confidence": 0.91,
-  "src_ip": "192.168.1.10"
+  "src_ip": "192.168.1.10",
+  "__cases__": {
+    "port_scan": {
+      "timestamp": "2026-04-07T21:00:02",
+      "prediction": "Port Scan",
+      "confidence": 0.91,
+      "src_ip": "192.168.1.10"
+    },
+    "dos": {
+      "timestamp": "2026-04-07T21:05:18",
+      "prediction": "DoS",
+      "confidence": 0.89,
+      "src_ip": "10.0.0.45"
+    },
+    "brute_force": {
+      "timestamp": "2026-04-07T21:09:44",
+      "prediction": "Brute Force",
+      "confidence": 0.94,
+      "src_ip": "172.16.10.8"
+    },
+    "normal": {
+      "timestamp": "2026-04-07T21:12:10",
+      "prediction": "Normal",
+      "confidence": 0.12,
+      "src_ip": "192.168.1.55"
+    },
+    "medium_rule_alert": {
+      "timestamp": "2026-04-07T21:15:20",
+      "prediction": "Port Scan",
+      "confidence": 0.52,
+      "src_ip": "192.168.10.11"
+    },
+    "ml_only_anomaly": {
+      "timestamp": "2026-04-07T21:18:50",
+      "prediction": "DoS",
+      "confidence": 0.73,
+      "src_ip": "172.20.0.9"
+    }
+  }
 }
